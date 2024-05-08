@@ -38,7 +38,7 @@
 		"uuid": "9.0.1"
 	},
 	"devDependencies": {
-		"@playform/build": "0.0.8",
+		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
 		"@types/node": "20.12.11",
 		"@vercel/ncc": "0.38.1",
