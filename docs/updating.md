@@ -21,7 +21,7 @@
 
   e.g.
   ```yaml
-      - uses: actions/checkout@v4.1.5
+      - uses: actions/checkout@v4.1.6
 
       # Make changes to pull request here
 
@@ -54,7 +54,7 @@
 
   To use `actions/checkout@v1` the following step to checkout the branch is necessary.
   ```yml
-      - uses: actions/checkout@v4.1.5
+      - uses: actions/checkout@v4.1.6
       - name: Checkout branch
         run: git checkout "${GITHUB_REF:11}"
   ```
