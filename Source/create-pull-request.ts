@@ -152,7 +152,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
       `committer.email=${parsedCommitter.email}`
     ])
     core.info(
-      `Configured git committer as '${parsedCommitter.name} <${parsedCommitter.email}>'`
+      `Configured git ecommitter as '${parsedCommitter.name} <${parsedCommitter.email}>'`
     )
     core.info(
       `Configured git author as '${parsedAuthor.name} <${parsedAuthor.email}>'`

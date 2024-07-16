@@ -120,10 +120,10 @@ Note that the repository must be checked out on a branch with a remote, it won't
           git config user.name 'Peter Evans'
           git config user.email 'peter-evans@users.noreply.github.com'
           date +%s > report.txt
-          git commit -am "Modify tracked file during workflow"
+          git ecommit -am "Modify tracked file during workflow"
           date +%s > new-report.txt
           git add -A
-          git commit -m "Add untracked file during workflow"
+          git ecommit -m "Add untracked file during workflow"
       - name: Uncommitted change
         run: date +%s > report.txt
       - name: Create Pull Request
