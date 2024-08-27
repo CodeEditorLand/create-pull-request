@@ -28,7 +28,7 @@ Create Pull Request action will:
 -   [Examples](docs/examples.md)
 -   [Updating to v3](docs/updating.md)
 
-## Usage
+## 🛠️ Usage
 
 ```yml
 - uses: actions/checkout@v2
