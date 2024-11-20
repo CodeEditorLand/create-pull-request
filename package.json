@@ -1,12 +1,4 @@
 {
-	"name": "create-pull-request",
-	"description": "Creates a pull request for changes to your repository in the actions workspace",
-	"main": "lib/main.js",
-	"scripts": {
-		"build": "tsc && ncc build",
-		"test:int": "__test__/integration-tests.sh",
-		"test:unit": "jest unit"
-	},
 	"dependencies": {
 		"@actions/core": "1.11.1",
 		"@actions/exec": "1.1.1",
@@ -15,9 +7,17 @@
 		"@octokit/plugin-rest-endpoint-methods": "13.2.6",
 		"uuid": "11.0.3"
 	},
+	"description": "Creates a pull request for changes to your repository in the actions workspace",
 	"devDependencies": {
 		"@types/node": "22.9.1",
 		"@vercel/ncc": "0.38.3",
 		"js-yaml": "4.1.0"
+	},
+	"main": "lib/main.js",
+	"name": "create-pull-request",
+	"scripts": {
+		"build": "tsc && ncc build",
+		"test:int": "__test__/integration-tests.sh",
+		"test:unit": "jest unit"
 	}
 }
