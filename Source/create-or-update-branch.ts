@@ -18,12 +18,14 @@ export async function getWorkingBaseAndType(
 		["symbolic-ref", "HEAD", "--short"],
 		true,
 	);
+
 	if (symbolicRefResult.exitCode == 0) {
 		// A ref is checked out
 		return [symbolicRefResult.stdout.trim(), WorkingBaseType.Branch];
 	} else {
 		// A commit is checked out (detached HEAD)
 		const headSha = await git.revParse("HEAD");
+
 		return [headSha, WorkingBaseType.Commit];
 	}
 }
@@ -35,6 +37,7 @@ export async function tryFetch(
 ): Promise<boolean> {
 	try {
 		await git.fetch([`${branch}:refs/remotes/${remote}/${branch}`], remote);
+
 		return true;
 	} catch {
 		return false;
@@ -51,6 +54,7 @@ async function isAhead(
 		[`${branch1}...${branch2}`],
 		["--right-only", "--count"],
 	);
+
 	return Number(result) > 0;
 }
 
@@ -64,6 +68,7 @@ async function isBehind(
 		[`${branch1}...${branch2}`],
 		["--left-only", "--count"],
 	);
+
 	return Number(result) > 0;
 }
 
@@ -85,6 +90,7 @@ async function hasDiff(
 	branch2: string,
 ): Promise<boolean> {
 	const result = await git.diff([`${branch1}..${branch2}`]);
+
 	return result.length > 0;
 }
 
@@ -108,6 +114,7 @@ export async function createOrUpdateBranch(
 	// When a commit, we must rebase onto the actual base.
 	const [workingBase, workingBaseType] = await getWorkingBaseAndType(git);
 	core.info(`Working base is ${workingBaseType} '${workingBase}'`);
+
 	if (workingBaseType == WorkingBaseType.Commit && !base) {
 		throw new Error(
 			`When in 'detached HEAD' state, 'base' must be supplied.`,
@@ -116,6 +123,7 @@ export async function createOrUpdateBranch(
 
 	// If the base is not specified it is assumed to be the working base.
 	base = base ? base : workingBase;
+
 	const baseRemote = "origin";
 
 	// Set the default return values
@@ -132,7 +140,9 @@ export async function createOrUpdateBranch(
 	if (await git.isDirty(true)) {
 		core.info("Uncommitted changes found. Adding a commit.");
 		await git.exec(["add", "-A"]);
+
 		const params = ["-m", commitMessage];
+
 		if (signoff) {
 			params.push("--signoff");
 		}
@@ -164,11 +174,13 @@ export async function createOrUpdateBranch(
 			[`${workingBase}..${tempBranch}`, "."],
 			["--reverse"],
 		);
+
 		for (const commit of splitLines(commits)) {
 			const result = await git.cherryPick(
 				["--strategy=recursive", "--strategy-option=theirs", commit],
 				true,
 			);
+
 			if (
 				result.exitCode != 0 &&
 				!result.stderr.includes(CHERRYPICK_EMPTY)
@@ -190,6 +202,7 @@ export async function createOrUpdateBranch(
 		await git.checkout(branch, "HEAD");
 		// Check if the pull request branch is ahead of the base
 		result.hasDiffWithBase = await isAhead(git, base, branch);
+
 		if (result.hasDiffWithBase) {
 			result.action = "created";
 			core.info(`Created branch '${branch}'`);

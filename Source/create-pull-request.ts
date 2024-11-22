@@ -34,6 +34,7 @@ export interface Inputs {
 
 export async function createPullRequest(inputs: Inputs): Promise<void> {
 	let gitAuthHelper;
+
 	try {
 		// Get the repository path
 		const repoPath = utils.getRepoPath(inputs.path);
@@ -52,16 +53,20 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 		core.startGroup("Determining the base and head repositories");
 		// Determine the base repository from git config
 		const remoteUrl = await git.tryGetRemoteUrl();
+
 		const baseRemote = utils.getRemoteDetail(remoteUrl);
 		// Determine the head repository; the target for the pull request branch
 		const branchRemoteName = inputs.pushToFork ? "fork" : "origin";
+
 		const branchRepository = inputs.pushToFork
 			? inputs.pushToFork
 			: baseRemote.repository;
+
 		if (inputs.pushToFork) {
 			// Check if the supplied fork is really a fork of the base
 			const parentRepository =
 				await githubHelper.getRepositoryParent(branchRepository);
+
 			if (parentRepository != baseRemote.repository) {
 				throw new Error(
 					`Repository '${branchRepository}' is not a fork of '${baseRemote.repository}'. Unable to continue.`,
@@ -87,6 +92,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 		}
 
 		core.startGroup("Checking the base repository state");
+
 		const [workingBase, workingBaseType] = await getWorkingBaseAndType(git);
 		core.info(`Working base is ${workingBaseType} '${workingBase}'`);
 		// When in detached HEAD state (checked out on a commit), we need to
@@ -117,15 +123,21 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 						"HEAD",
 						["--short"],
 					)}`;
+
 					break;
+
 				case "timestamp":
 					// Suffix with the current timestamp
 					inputs.branch = `${inputs.branch}-${utils.secondsSinceEpoch()}`;
+
 					break;
+
 				case "random":
 					// Suffix with a 7 character random string
 					inputs.branch = `${inputs.branch}-${utils.randomString()}`;
+
 					break;
+
 				default:
 					throw new Error(
 						`Branch suffix '${inputs.branchSuffix}' is not a valid value. Unable to continue.`,
@@ -140,7 +152,9 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 
 		// Configure the committer and author
 		core.startGroup("Configuring the committer and author");
+
 		const parsedAuthor = utils.parseDisplayNameEmail(inputs.author);
+
 		const parsedCommitter = utils.parseDisplayNameEmail(inputs.committer);
 		git.setIdentityGitOptions([
 			"-c",
@@ -162,6 +176,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 
 		// Create or update the pull request branch
 		core.startGroup("Create or update the pull request branch");
+
 		const result = await createOrUpdateBranch(
 			git,
 			inputs.commitMessage,
@@ -202,6 +217,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 				core.info(
 					`Branch '${inputs.branch}' no longer differs from base branch '${inputs.base}'`,
 				);
+
 				if (inputs.deleteBranch) {
 					core.info(`Deleting branch '${inputs.branch}'`);
 					await git.push([

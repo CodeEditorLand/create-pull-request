@@ -20,6 +20,7 @@ export class GitAuthHelper {
 			".git",
 			"config",
 		);
+
 		const serverUrl = this.getServerUrl();
 		this.extraheaderConfigKey = `http.${serverUrl.origin}/.extraheader`;
 	}
@@ -49,6 +50,7 @@ export class GitAuthHelper {
 			"utf8",
 		).toString("base64");
 		core.setSecret(basicCredential);
+
 		const extraheaderConfigValue = `AUTHORIZATION: basic ${basicCredential}`;
 		await this.setExtraheaderConfig(extraheaderConfigValue);
 	}
@@ -88,6 +90,7 @@ export class GitAuthHelper {
 				this.extraheaderConfigKey,
 				this.extraheaderConfigValueRegex,
 			);
+
 			if (
 				await this.git.tryConfigUnset(
 					this.extraheaderConfigKey,
@@ -111,7 +114,9 @@ export class GitAuthHelper {
 		let content = (
 			await fs.promises.readFile(this.gitConfigPath)
 		).toString();
+
 		const index = content.indexOf(find);
+
 		if (index < 0 || index != content.lastIndexOf(find)) {
 			throw new Error(
 				`Unable to replace '${find}' in ${this.gitConfigPath}`,

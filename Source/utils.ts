@@ -18,6 +18,7 @@ export function getStringAsArray(str: string): string[] {
 
 export function getRepoPath(relativePath?: string): string {
 	let githubWorkspacePath = process.env["GITHUB_WORKSPACE"];
+
 	if (!githubWorkspacePath) {
 		throw new Error("GITHUB_WORKSPACE not defined");
 	}
@@ -25,9 +26,11 @@ export function getRepoPath(relativePath?: string): string {
 	core.debug(`githubWorkspacePath: ${githubWorkspacePath}`);
 
 	let repoPath = githubWorkspacePath;
+
 	if (relativePath) repoPath = path.resolve(repoPath, relativePath);
 
 	core.debug(`repoPath: ${repoPath}`);
+
 	return repoPath;
 }
 
@@ -40,9 +43,11 @@ export function getRemoteDetail(remoteUrl: string): RemoteDetail {
 	// Parse the protocol and github repository from a URL
 	// e.g. HTTPS, peter-evans/create-pull-request
 	const httpsUrlPattern = /^https:\/\/.*@?github.com\/(.+\/.+)$/i;
+
 	const sshUrlPattern = /^git@github.com:(.+\/.+).git$/i;
 
 	const httpsMatch = remoteUrl.match(httpsUrlPattern);
+
 	if (httpsMatch) {
 		return {
 			protocol: "HTTPS",
@@ -51,6 +56,7 @@ export function getRemoteDetail(remoteUrl: string): RemoteDetail {
 	}
 
 	const sshMatch = remoteUrl.match(sshUrlPattern);
+
 	if (sshMatch) {
 		return {
 			protocol: "SSH",
@@ -71,6 +77,7 @@ export function getRemoteUrl(protocol: string, repository: string): string {
 
 export function secondsSinceEpoch(): number {
 	const now = new Date();
+
 	return Math.round(now.getTime() / 1000);
 }
 
@@ -92,6 +99,7 @@ export function parseDisplayNameEmail(
 
 	// Check we have a match
 	const match = displayNameEmail.match(pattern);
+
 	if (!match) {
 		throw new Error(
 			`The format of '${displayNameEmail}' is not a valid email address with display name`,
@@ -100,7 +108,9 @@ export function parseDisplayNameEmail(
 
 	// Check that name and email are not just whitespace
 	const name = match[1].trim();
+
 	const email = match[2].trim();
+
 	if (!name || !email) {
 		throw new Error(
 			`The format of '${displayNameEmail}' is not a valid email address with display name`,
@@ -119,6 +129,7 @@ export function fileExistsSync(path: string): boolean {
 	}
 
 	let stats: fs.Stats;
+
 	try {
 		stats = fs.statSync(path);
 	} catch (error) {

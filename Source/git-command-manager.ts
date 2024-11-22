@@ -19,6 +19,7 @@ export class GitCommandManager {
 
 	static async create(workingDirectory: string): Promise<GitCommandManager> {
 		const gitPath = await io.which("git", true);
+
 		return new GitCommandManager(workingDirectory, gitPath);
 	}
 
@@ -28,6 +29,7 @@ export class GitCommandManager {
 
 	async checkout(ref: string, startPoint?: string): Promise<void> {
 		const args = ["checkout", "--progress"];
+
 		if (startPoint) {
 			args.push("-B", ref, startPoint);
 		} else {
@@ -41,6 +43,7 @@ export class GitCommandManager {
 		allowAllExitCodes = false,
 	): Promise<GitOutput> {
 		const args = ["cherry-pick"];
+
 		if (this.identityGitOptions) {
 			args.unshift(...this.identityGitOptions);
 		}
@@ -54,6 +57,7 @@ export class GitCommandManager {
 
 	async commit(options?: string[]): Promise<void> {
 		const args = ["commit"];
+
 		if (this.identityGitOptions) {
 			args.unshift(...this.identityGitOptions);
 		}
@@ -94,15 +98,18 @@ export class GitCommandManager {
 			],
 			true,
 		);
+
 		return output.exitCode === 0;
 	}
 
 	async diff(options?: string[]): Promise<string> {
 		const args = ["-c", "core.pager=cat", "diff"];
+
 		if (options) {
 			args.push(...options);
 		}
 		const output = await this.exec(args);
+
 		return output.stdout.trim();
 	}
 
@@ -112,11 +119,13 @@ export class GitCommandManager {
 		options?: string[],
 	): Promise<void> {
 		const args = ["-c", "protocol.version=2", "fetch"];
+
 		if (!refSpec.some((x) => x === tagsRefSpec)) {
 			args.push("--no-tags");
 		}
 
 		args.push("--progress", "--no-recurse-submodules");
+
 		if (
 			utils.fileExistsSync(
 				path.join(this.workingDirectory, ".git", "shallow"),
@@ -152,6 +161,7 @@ export class GitCommandManager {
 			configKey,
 			configValue,
 		]);
+
 		return output.stdout.trim().split(`${configKey} `)[1];
 	}
 
@@ -178,6 +188,7 @@ export class GitCommandManager {
 
 	async push(options?: string[]): Promise<void> {
 		const args = ["push"];
+
 		if (options) {
 			args.push(...options);
 		}
@@ -189,39 +200,49 @@ export class GitCommandManager {
 		options?: string[],
 	): Promise<string> {
 		const args = ["rev-list"];
+
 		if (options) {
 			args.push(...options);
 		}
 		args.push(...commitExpression);
+
 		const output = await this.exec(args);
+
 		return output.stdout.trim();
 	}
 
 	async revParse(ref: string, options?: string[]): Promise<string> {
 		const args = ["rev-parse"];
+
 		if (options) {
 			args.push(...options);
 		}
 		args.push(ref);
+
 		const output = await this.exec(args);
+
 		return output.stdout.trim();
 	}
 
 	async status(options?: string[]): Promise<string> {
 		const args = ["status"];
+
 		if (options) {
 			args.push(...options);
 		}
 		const output = await this.exec(args);
+
 		return output.stdout.trim();
 	}
 
 	async symbolicRef(ref: string, options?: string[]): Promise<string> {
 		const args = ["symbolic-ref", ref];
+
 		if (options) {
 			args.push(...options);
 		}
 		const output = await this.exec(args);
+
 		return output.stdout.trim();
 	}
 
@@ -240,6 +261,7 @@ export class GitCommandManager {
 			],
 			true,
 		);
+
 		return output.exitCode === 0;
 	}
 
@@ -254,6 +276,7 @@ export class GitCommandManager {
 		}
 
 		const stdout = output.stdout.trim();
+
 		if (stdout.includes("\n")) {
 			return "";
 		}
@@ -265,11 +288,13 @@ export class GitCommandManager {
 		const result = new GitOutput();
 
 		const env = {};
+
 		for (const key of Object.keys(process.env)) {
 			env[key] = process.env[key];
 		}
 
 		const stdout: string[] = [];
+
 		const stderr: string[] = [];
 
 		const options = {
@@ -289,6 +314,7 @@ export class GitCommandManager {
 		result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options);
 		result.stdout = stdout.join("");
 		result.stderr = stderr.join("");
+
 		return result;
 	}
 }

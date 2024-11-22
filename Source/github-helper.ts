@@ -21,6 +21,7 @@ export class GitHubHelper {
 
 	constructor(token: string) {
 		const options: OctokitOptions = {};
+
 		if (token) {
 			options.auth = `${token}`;
 		}
@@ -29,6 +30,7 @@ export class GitHubHelper {
 
 	private parseRepository(repository: string): Repository {
 		const [owner, repo] = repository.split("/");
+
 		return {
 			owner: owner,
 			repo: repo,
@@ -53,6 +55,7 @@ export class GitHubHelper {
 			core.info(
 				`Created pull request #${pull.number} (${headBranch} => ${inputs.base})`,
 			);
+
 			return {
 				number: pull.number,
 				html_url: pull.html_url,
@@ -75,6 +78,7 @@ export class GitHubHelper {
 			head: headBranch,
 			base: inputs.base,
 		});
+
 		const { data: pull } = await this.octokit.pulls.update({
 			...this.parseRepository(baseRepository),
 			pull_number: pulls[0].number,
@@ -85,6 +89,7 @@ export class GitHubHelper {
 		core.info(
 			`Updated pull request #${pull.number} (${headBranch} => ${inputs.base})`,
 		);
+
 		return {
 			number: pull.number,
 			html_url: pull.html_url,
@@ -95,6 +100,7 @@ export class GitHubHelper {
 		const { data: headRepo } = await this.octokit.repos.get({
 			...this.parseRepository(headRepository),
 		});
+
 		if (!headRepo.parent) {
 			throw new Error(
 				`Repository '${headRepository}' is not a fork. Unable to continue.`,
@@ -109,6 +115,7 @@ export class GitHubHelper {
 		headRepository: string,
 	): Promise<void> {
 		const [headOwner] = headRepository.split("/");
+
 		const headBranch = `${headOwner}:${inputs.branch}`;
 
 		// Create or update the pull request
@@ -128,6 +135,7 @@ export class GitHubHelper {
 
 		// Set milestone, labels and assignees
 		const updateIssueParams = {};
+
 		if (inputs.milestone) {
 			updateIssueParams["milestone"] = inputs.milestone;
 			core.info(`Applying milestone '${inputs.milestone}'`);
@@ -150,6 +158,7 @@ export class GitHubHelper {
 
 		// Request reviewers and team reviewers
 		const requestReviewersParams = {};
+
 		if (inputs.reviewers.length > 0) {
 			requestReviewersParams["reviewers"] = inputs.reviewers;
 			core.info(`Requesting reviewers '${inputs.reviewers}'`);
