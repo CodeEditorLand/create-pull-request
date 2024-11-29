@@ -8,12 +8,14 @@ const tagsRefSpec = "+refs/tags/*:refs/tags/*";
 
 export class GitCommandManager {
 	private gitPath: string;
+
 	private workingDirectory: string;
 	// Git options used when commands require an identity
 	private identityGitOptions?: string[];
 
 	private constructor(workingDirectory: string, gitPath: string) {
 		this.workingDirectory = workingDirectory;
+
 		this.gitPath = gitPath;
 	}
 
@@ -35,6 +37,7 @@ export class GitCommandManager {
 		} else {
 			args.push(ref);
 		}
+
 		await this.exec(args);
 	}
 
@@ -108,6 +111,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		const output = await this.exec(args);
 
 		return output.stdout.trim();
@@ -143,6 +147,7 @@ export class GitCommandManager {
 		} else {
 			args.push("origin");
 		}
+
 		for (const arg of refSpec) {
 			args.push(arg);
 		}
@@ -183,6 +188,7 @@ export class GitCommandManager {
 		if (untracked && (await this.status(["--porcelain", "-unormal"]))) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -192,6 +198,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		await this.exec(args);
 	}
 
@@ -204,6 +211,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		args.push(...commitExpression);
 
 		const output = await this.exec(args);
@@ -217,6 +225,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		args.push(ref);
 
 		const output = await this.exec(args);
@@ -230,6 +239,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		const output = await this.exec(args);
 
 		return output.stdout.trim();
@@ -241,6 +251,7 @@ export class GitCommandManager {
 		if (options) {
 			args.push(...options);
 		}
+
 		const output = await this.exec(args);
 
 		return output.stdout.trim();
@@ -312,7 +323,9 @@ export class GitCommandManager {
 		};
 
 		result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options);
+
 		result.stdout = stdout.join("");
+
 		result.stderr = stderr.join("");
 
 		return result;
@@ -321,6 +334,8 @@ export class GitCommandManager {
 
 class GitOutput {
 	stdout = "";
+
 	stderr = "";
+
 	exitCode = 0;
 }

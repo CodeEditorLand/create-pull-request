@@ -7,14 +7,20 @@ import { GitCommandManager } from "./git-command-manager";
 
 export class GitAuthHelper {
 	private git: GitCommandManager;
+
 	private gitConfigPath: string;
+
 	private extraheaderConfigKey: string;
+
 	private extraheaderConfigPlaceholderValue = "AUTHORIZATION: basic ***";
+
 	private extraheaderConfigValueRegex = "^AUTHORIZATION:";
+
 	private persistedExtraheaderConfigValue = "";
 
 	constructor(git: GitCommandManager) {
 		this.git = git;
+
 		this.gitConfigPath = path.join(
 			this.git.getWorkingDirectory(),
 			".git",
@@ -22,6 +28,7 @@ export class GitAuthHelper {
 		);
 
 		const serverUrl = this.getServerUrl();
+
 		this.extraheaderConfigKey = `http.${serverUrl.origin}/.extraheader`;
 	}
 
@@ -36,6 +43,7 @@ export class GitAuthHelper {
 				await this.setExtraheaderConfig(
 					this.persistedExtraheaderConfigValue,
 				);
+
 				core.info("Persisted git credentials restored");
 			} catch (e) {
 				core.warning(e);
@@ -49,9 +57,11 @@ export class GitAuthHelper {
 			`x-access-token:${token}`,
 			"utf8",
 		).toString("base64");
+
 		core.setSecret(basicCredential);
 
 		const extraheaderConfigValue = `AUTHORIZATION: basic ${basicCredential}`;
+
 		await this.setExtraheaderConfig(extraheaderConfigValue);
 	}
 
@@ -104,6 +114,7 @@ export class GitAuthHelper {
 				);
 			}
 		}
+
 		return configValue;
 	}
 
@@ -122,7 +133,9 @@ export class GitAuthHelper {
 				`Unable to replace '${find}' in ${this.gitConfigPath}`,
 			);
 		}
+
 		content = content.replace(find, replace);
+
 		await fs.promises.writeFile(this.gitConfigPath, content);
 	}
 

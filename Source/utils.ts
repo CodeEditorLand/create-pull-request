@@ -22,7 +22,9 @@ export function getRepoPath(relativePath?: string): string {
 	if (!githubWorkspacePath) {
 		throw new Error("GITHUB_WORKSPACE not defined");
 	}
+
 	githubWorkspacePath = path.resolve(githubWorkspacePath);
+
 	core.debug(`githubWorkspacePath: ${githubWorkspacePath}`);
 
 	let repoPath = githubWorkspacePath;
@@ -36,6 +38,7 @@ export function getRepoPath(relativePath?: string): string {
 
 interface RemoteDetail {
 	protocol: string;
+
 	repository: string;
 }
 
@@ -87,6 +90,7 @@ export function randomString(): string {
 
 interface DisplayNameEmail {
 	name: string;
+
 	email: string;
 }
 

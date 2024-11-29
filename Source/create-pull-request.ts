@@ -12,23 +12,41 @@ import * as utils from "./utils";
 
 export interface Inputs {
 	token: string;
+
 	path: string;
+
 	commitMessage: string;
+
 	committer: string;
+
 	author: string;
+
 	signoff: boolean;
+
 	branch: string;
+
 	deleteBranch: boolean;
+
 	branchSuffix: string;
+
 	base: string;
+
 	pushToFork: string;
+
 	title: string;
+
 	body: string;
+
 	labels: string[];
+
 	assignees: string[];
+
 	reviewers: string[];
+
 	teamReviewers: string[];
+
 	milestone: number;
+
 	draft: boolean;
 }
 
@@ -43,8 +61,11 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 
 		// Save and unset the extraheader auth config if it exists
 		core.startGroup("Save persisted git credentials");
+
 		gitAuthHelper = new GitAuthHelper(git);
+
 		await gitAuthHelper.savePersistedAuth();
+
 		core.endGroup();
 
 		// Init the GitHub client
@@ -77,9 +98,12 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 				baseRemote.protocol,
 				branchRepository,
 			);
+
 			await git.exec(["remote", "add", "fork", remoteUrl]);
 		}
+
 		core.endGroup();
+
 		core.info(
 			`Pull request branch target repository set to ${branchRepository}`,
 		);
@@ -87,13 +111,16 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 		// Configure auth
 		if (baseRemote.protocol == "HTTPS") {
 			core.startGroup("Configuring credential for HTTPS authentication");
+
 			await gitAuthHelper.configureToken(inputs.token);
+
 			core.endGroup();
 		}
 
 		core.startGroup("Checking the base repository state");
 
 		const [workingBase, workingBaseType] = await getWorkingBaseAndType(git);
+
 		core.info(`Working base is ${workingBaseType} '${workingBase}'`);
 		// When in detached HEAD state (checked out on a commit), we need to
 		// know the 'base' branch in order to rebase changes.
@@ -112,6 +139,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 				`The 'base' and 'branch' for a pull request must be different branches. Unable to continue.`,
 			);
 		}
+
 		core.endGroup();
 
 		// Apply the branch suffix if set
@@ -156,6 +184,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 		const parsedAuthor = utils.parseDisplayNameEmail(inputs.author);
 
 		const parsedCommitter = utils.parseDisplayNameEmail(inputs.committer);
+
 		git.setIdentityGitOptions([
 			"-c",
 			`author.name=${parsedAuthor.name}`,
@@ -166,12 +195,15 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 			"-c",
 			`committer.email=${parsedCommitter.email}`,
 		]);
+
 		core.info(
 			`Configured git committer as '${parsedCommitter.name} <${parsedCommitter.email}>'`,
 		);
+
 		core.info(
 			`Configured git author as '${parsedAuthor.name} <${parsedAuthor.email}>'`,
 		);
+
 		core.endGroup();
 
 		// Create or update the pull request branch
@@ -185,6 +217,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 			branchRemoteName,
 			inputs.signoff,
 		);
+
 		core.endGroup();
 
 		if (["created", "updated"].includes(result.action)) {
@@ -192,11 +225,13 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 			core.startGroup(
 				`Pushing pull request branch to '${branchRemoteName}/${inputs.branch}'`,
 			);
+
 			await git.push([
 				"--force-with-lease",
 				branchRemoteName,
 				`HEAD:refs/heads/${inputs.branch}`,
 			]);
+
 			core.endGroup();
 		}
 
@@ -220,6 +255,7 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 
 				if (inputs.deleteBranch) {
 					core.info(`Deleting branch '${inputs.branch}'`);
+
 					await git.push([
 						"--delete",
 						"--force",
@@ -234,8 +270,11 @@ export async function createPullRequest(inputs: Inputs): Promise<void> {
 	} finally {
 		// Remove auth and restore persisted auth config if it existed
 		core.startGroup("Restore persisted git credentials");
+
 		await gitAuthHelper.removeAuth();
+
 		await gitAuthHelper.restorePersistedAuth();
+
 		core.endGroup();
 	}
 }

@@ -27,6 +27,7 @@ async function run(): Promise<void> {
 			milestone: Number(core.getInput("milestone")),
 			draft: core.getInput("draft") === "true",
 		};
+
 		core.debug(`Inputs: ${inspect(inputs)}`);
 
 		await createPullRequest(inputs);

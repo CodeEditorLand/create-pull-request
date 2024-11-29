@@ -113,6 +113,7 @@ export async function createOrUpdateBranch(
 	// When a ref, it may or may not be the actual base.
 	// When a commit, we must rebase onto the actual base.
 	const [workingBase, workingBaseType] = await getWorkingBaseAndType(git);
+
 	core.info(`Working base is ${workingBaseType} '${workingBase}'`);
 
 	if (workingBaseType == WorkingBaseType.Commit && !base) {
@@ -135,10 +136,12 @@ export async function createOrUpdateBranch(
 
 	// Save the working base changes to a temporary branch
 	const tempBranch = uuidv4();
+
 	await git.checkout(tempBranch, "HEAD");
 	// Commit any uncommitted changes
 	if (await git.isDirty(true)) {
 		core.info("Uncommitted changes found. Adding a commit.");
+
 		await git.exec(["add", "-A"]);
 
 		const params = ["-m", commitMessage];
@@ -146,6 +149,7 @@ export async function createOrUpdateBranch(
 		if (signoff) {
 			params.push("--signoff");
 		}
+
 		await git.commit(params);
 	}
 
@@ -155,6 +159,7 @@ export async function createOrUpdateBranch(
 		core.info(
 			`Resetting working base branch '${workingBase}' to its remote`,
 		);
+
 		await git.fetch([`${workingBase}:${workingBase}`], baseRemote, [
 			"--force",
 		]);
@@ -168,6 +173,7 @@ export async function createOrUpdateBranch(
 		);
 		// Checkout the actual base
 		await git.fetch([`${base}:${base}`], baseRemote, ["--force"]);
+
 		await git.checkout(base);
 		// Cherrypick commits from the temporary branch starting from the working base
 		const commits = await git.revList(
@@ -205,6 +211,7 @@ export async function createOrUpdateBranch(
 
 		if (result.hasDiffWithBase) {
 			result.action = "created";
+
 			core.info(`Created branch '${branch}'`);
 		} else {
 			core.info(
@@ -241,9 +248,11 @@ export async function createOrUpdateBranch(
 		// It may be behind if a reset now results in no diff with the base
 		if (!(await isEven(git, `${branchRemoteName}/${branch}`, branch))) {
 			result.action = "updated";
+
 			core.info(`Updated branch '${branch}'`);
 		} else {
 			result.action = "not-updated";
+
 			core.info(
 				`Branch '${branch}' is even with its remote and will not be updated`,
 			);
@@ -261,6 +270,8 @@ export async function createOrUpdateBranch(
 
 interface CreateOrUpdateBranchResult {
 	action: string;
+
 	base: string;
+
 	hasDiffWithBase: boolean;
 }
