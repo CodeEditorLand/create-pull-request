@@ -3,13 +3,13 @@
 		"@actions/core": "1.11.1",
 		"@actions/exec": "1.1.1",
 		"@octokit/core": "6.1.2",
-		"@octokit/plugin-paginate-rest": "11.3.5",
+		"@octokit/plugin-paginate-rest": "11.3.6",
 		"@octokit/plugin-rest-endpoint-methods": "13.2.6",
 		"uuid": "11.0.3"
 	},
 	"description": "Creates a pull request for changes to your repository in the actions workspace",
 	"devDependencies": {
-		"@types/node": "22.10.0",
+		"@types/node": "22.10.1",
 		"@vercel/ncc": "0.38.3",
 		"js-yaml": "4.1.0"
 	},
